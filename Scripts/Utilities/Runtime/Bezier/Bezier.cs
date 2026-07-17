@@ -23,7 +23,7 @@ namespace Utilities
 		/// looping, automatic control point calculation, and ground alignment.
 		/// </summary>
 		[Serializable]
-		public class Path
+		public class Path : ISerializationCallbackReceiver
 		{
 			#region Variables
 
@@ -34,13 +34,13 @@ namespace Utilities
 			/// Each segment consists of 4 points (anchor-control-control-anchor), with each segment
 			/// sharing an anchor point with adjacent segments, resulting in 3 points per segment.
 			/// </summary>
-			public int SegmentsCount => points.Count / 3;
+			public int SegmentsCount => points != null && points.Count >= 4 ? points.Count / 3 : 0;
 			
 			/// <summary>
 			/// Gets the total number of points in the path, including both anchor and control points.
 			/// For a path with n segments, there are 3n+1 total points.
 			/// </summary>
-			public int PointsCount => points.Count;
+			public int PointsCount => points != null ? points.Count : 0;
 			
 			/// <summary>
 			/// Gets or sets whether control points are automatically calculated based on anchor positions.
@@ -55,6 +55,8 @@ namespace Utilities
 				}
 				set
 				{
+					EnsureCollections();
+
 					if (autoCalculateControls == value)
 						return;
 
@@ -81,6 +83,8 @@ namespace Utilities
 				}
 				set
 				{
+					EnsureCollections();
+
 					if (SegmentsCount < 1 || loopedPath == value)
 						return;
 
@@ -182,10 +186,14 @@ namespace Utilities
 			{
 				get
 				{
+					EnsureCollections();
+
 					return points[index];
 				}
 				set
 				{
+					EnsureCollections();
+
 					if (points[index] == value || AutoCalculateControls && !IsAnchorPoint(index))
 						return;
 
@@ -218,6 +226,22 @@ namespace Utilities
 			#endregion
 
 			#region Methods
+
+			public void OnBeforeSerialize()
+			{
+				EnsureCollections();
+			}
+
+			public void OnAfterDeserialize()
+			{
+				EnsureCollections();
+			}
+
+			private void EnsureCollections()
+			{
+				points ??= new List<Vector3>();
+				disabledSegments ??= new List<int>();
+			}
 
 			/// <summary>
 			/// Creates a mesh representation of the path with specified width and density.
@@ -323,6 +347,9 @@ namespace Utilities
 			public float EstimatedSegmentLength(int index)
 			{
 				Vector3[] segmentPoints = GetSegmentPoints(index);
+				if (segmentPoints.Length < 4)
+					return 0f;
+
 				float controlNetLength = Utility.Distance(segmentPoints[0], segmentPoints[1]) + Utility.Distance(segmentPoints[1], segmentPoints[2]) + Utility.Distance(segmentPoints[2], segmentPoints[3]);
 				
 				return Utility.Distance(segmentPoints[0], segmentPoints[3]) + controlNetLength * .5f;
@@ -337,6 +364,8 @@ namespace Utilities
 			/// <param name="position">The world position of the new anchor point.</param>
 			public void AddSegment(Vector3 position)
 			{
+				EnsureCollections();
+
 				if (points.Count < 1)
 				{
 					points.Add(position);
@@ -380,6 +409,8 @@ namespace Utilities
 			/// <param name="index">The index of the segment to split.</param>
 			public void SplitSegment(Vector3 position, int index)
 			{
+				EnsureCollections();
+
 				if (SegmentsCount < 1)
 					return;
 
@@ -406,6 +437,8 @@ namespace Utilities
 			/// <returns>True if the segment is disabled, false otherwise.</returns>
 			public bool IsSegmentDisabled(int index)
 			{
+				EnsureCollections();
+
 				return disabledSegments.IndexOf(index) > -1;
 			}
 			
@@ -415,6 +448,8 @@ namespace Utilities
 			/// <param name="index">The index of the segment to enable.</param>
 			public void EnableSegment(int index)
 			{
+				EnsureCollections();
+
 				disabledSegments.Remove(index);
 			}
 			
@@ -424,6 +459,8 @@ namespace Utilities
 			/// <param name="index">The index of the segment to disable.</param>
 			public void DisableSegment(int index)
 			{
+				EnsureCollections();
+
 				if (disabledSegments.IndexOf(index) < 0)
 					disabledSegments.Add(index);
 			}
@@ -436,6 +473,8 @@ namespace Utilities
 			/// <param name="anchorIndex">The index of the anchor point of the segment to remove.</param>
 			public void RemoveSegment(int anchorIndex)
 			{
+				EnsureCollections();
+
 				if (SegmentsCount < 3 && loopedPath || SegmentsCount < 2)
 					return;
 
@@ -467,6 +506,8 @@ namespace Utilities
 			/// <returns>An array of evenly spaced points along the path.</returns>
 			public Vector3[] GetSpacedPoints(float spacing, out Vector3[] pointsNormals, int resolution = 1)
 			{
+				EnsureCollections();
+
 				pointsNormals = null;
 
 				if (SegmentsCount < 1)
@@ -538,7 +579,9 @@ namespace Utilities
 			/// <returns>An array of four Vector3 points defining the cubic Bezier curve segment.</returns>
 			public Vector3[] GetSegmentPoints(int index)
 			{
-				if (SegmentsCount < 1)
+				EnsureCollections();
+
+				if (SegmentsCount < 1 || index < 0 || index >= SegmentsCount)
 					return new Vector3[] { };
 
 				return new Vector3[]
@@ -559,6 +602,8 @@ namespace Utilities
 			/// <returns>The index of the closest segment, or -1 if none is within range.</returns>
 			public int ClosestSegment(Vector3 position, float distanceRange)
 			{
+				EnsureCollections();
+
 				if (SegmentsCount < 2)
 					return SegmentsCount - 1;
 
@@ -611,6 +656,8 @@ namespace Utilities
 			/// <returns>The index of the closest anchor point, or -1 if none is within range.</returns>
 			public int ClosestAnchorPoint(Vector3 position, float distanceRange)
 			{
+				EnsureCollections();
+
 				int closestAnchorIndex = -1;
 
 				for (int i = 0; i < points.Count; i += 3)
@@ -646,6 +693,8 @@ namespace Utilities
 			/// <returns>The position of the anchor point.</returns>
 			public Vector3 GetAnchorPoint(int index)
 			{
+				EnsureCollections();
+
 				if (PointsCount < 1)
 					return default;
 
@@ -663,11 +712,16 @@ namespace Utilities
 			/// <returns>The surface normal at the anchor point.</returns>
 			public Vector3 GetAnchorPointNormal(int index)
 			{
+				EnsureCollections();
+
 				if (PointsCount < 1)
 					return Vector3.up;
 
 				if (ShouldRefreshPointsNormals)
 					RefreshAnchorNormals();
+
+				if (pointsNormals == null || pointsNormals.Count < 1)
+					return Vector3.up;
 
 				return pointsNormals[LoopIndex(index * 3) / 3];
 			}
@@ -681,6 +735,11 @@ namespace Utilities
 			/// <param name="value">The new position for the anchor point.</param>
 			public void SetAnchorPoint(int index, Vector3 value)
 			{
+				EnsureCollections();
+
+				if (PointsCount < 1)
+					return;
+
 				index = LoopIndex(index * 3);
 
 				Vector3 deltaMove = value - points[index];
@@ -713,6 +772,8 @@ namespace Utilities
 			/// <returns>An array containing all anchor points in the path.</returns>
 			public Vector3[] GetAnchorPoints()
 			{
+				EnsureCollections();
+
 				return points.Where((point, index) => index % 3 == 0).ToArray();
 			}
 			
@@ -723,6 +784,8 @@ namespace Utilities
 			/// <param name="offset">The vector to add to all point positions.</param>
 			public void OffsetAllPoints(Vector3 offset)
 			{
+				EnsureCollections();
+
 				for (int i = 0; i < points.Count; i++)
 					points[i] += offset;
 			}
@@ -733,6 +796,8 @@ namespace Utilities
 			/// </summary>
 			private void AutoSetControls()
 			{
+				EnsureCollections();
+
 				for (int i = 0; i < points.Count; i += 3)
 					AutoSetAnchorControls(i);
 
@@ -892,10 +957,15 @@ namespace Utilities
 			/// </returns>
 			private int LoopIndex(int index)
 			{
-				while (index < 0)
-					index += PointsCount;
+				int pointsCount = PointsCount;
 
-				return index % PointsCount;
+				if (pointsCount < 1)
+					return 0;
+
+				while (index < 0)
+					index += pointsCount;
+
+				return index % pointsCount;
 			}
 
 			#endregion

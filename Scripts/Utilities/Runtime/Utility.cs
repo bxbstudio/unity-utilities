@@ -96,6 +96,26 @@ namespace Utilities
 
 			return null;
 		}
+
+		/// <summary>
+		/// Converts a Unity Vector3 to a Unity.Mathematics float3 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="vector">The Unity Vector3 to convert.</param>
+		/// <returns>A Unity.Mathematics float3 with the same x, y, and z values as the input Vector3.</returns>
+		public static float3 ToFloat3(this Vector3 vector)
+		{
+			return new float3(vector.x, vector.y, vector.z);
+		}
+
+		/// <summary>
+		/// Converts a Unity.Mathematics float3 to a Unity Vector3 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="vector">The Unity.Mathematics float3 to convert.</param>
+		/// <returns>A Unity Vector3 with the same x, y, and z values as the input float3.</returns>
+		public static Vector3 ToVector3(this float3 vector)
+		{
+			return new Vector3(vector.x, vector.y, vector.z);
+		}
 		/// <summary>
 		/// Clamps all keyframes in the animation curve to the range [0,1] for both time and value.
 		/// Creates a new animation curve with the same shape but rescaled to fit within the unit square.
@@ -6175,6 +6195,46 @@ namespace Utilities
 		public static float3 Abs(float3 vector)
 		{
 			return new float3(vector.x, vector.y, vector.z);
+		}
+		/// <summary>
+		/// Returns the closest point lying on the surface of an oriented box (OBB) to a given point.
+		/// Unlike <see cref="Collider.ClosestPoint"/>, which returns the query point unchanged when it
+		/// lies inside the box, this method always returns a point on the box's surface: when the point
+		/// is inside, it is snapped onto the nearest face. Works correctly under rotation and
+		/// non-uniform scale, since the half-extents carry the per-axis world scale and the orientation
+		/// is a pure rotation.
+		/// </summary>
+		/// <param name="point">The query point in world space.</param>
+		/// <param name="center">The center of the box in world space.</param>
+		/// <param name="halfExtents">The half-size of the box along each of its local axes (in world units).</param>
+		/// <param name="orientation">The world rotation of the box.</param>
+		/// <returns>The closest point on the box's surface to <paramref name="point"/>.</returns>
+		public static Vector3 ClosestPointOnBox(Vector3 point, Vector3 center, Vector3 halfExtents, Quaternion orientation)
+		{
+			// Rotate the query point into the box's local axis frame, where the box is axis-aligned.
+			Vector3 local = Quaternion.Inverse(orientation) * (point - center);
+			Vector3 clamped = new(
+				Mathf.Clamp(local.x, -halfExtents.x, halfExtents.x),
+				Mathf.Clamp(local.y, -halfExtents.y, halfExtents.y),
+				Mathf.Clamp(local.z, -halfExtents.z, halfExtents.z));
+
+			// Point inside the box: snap the axis of smallest penetration onto its face.
+			if (clamped == local)
+			{
+				float penX = halfExtents.x - Mathf.Abs(local.x);
+				float penY = halfExtents.y - Mathf.Abs(local.y);
+				float penZ = halfExtents.z - Mathf.Abs(local.z);
+
+				if (penX <= penY && penX <= penZ)
+					clamped.x = local.x < 0f ? -halfExtents.x : halfExtents.x;
+				else if (penY <= penZ)
+					clamped.y = local.y < 0f ? -halfExtents.y : halfExtents.y;
+				else
+					clamped.z = local.z < 0f ? -halfExtents.z : halfExtents.z;
+			}
+
+			// Rotate the result back into world space.
+			return center + orientation * clamped;
 		}
 		/// <summary>
 		/// Returns a Vector3 with the rounded values of the components of the input vector.

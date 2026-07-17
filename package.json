@@ -2,7 +2,7 @@
   "displayName": "Utilities",
   "name": "dev.bxbstudio.utilities",
   "description": "The Unity CSharp Utilities library provides a comprehensive collection of utility functions, extension methods, and data structures that are missing from the Unity Engine, helping developers write cleaner, more efficient code.",
-  "version": "1.1.12",
+  "version": "1.1.13",
   "unity": "2020.3",
   "unityRelease": "17f1",
   "dependencies": {

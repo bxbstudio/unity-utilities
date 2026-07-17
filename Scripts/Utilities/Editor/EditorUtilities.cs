@@ -591,6 +591,111 @@ namespace Utilities.Editor
 			Debug.Log(Selection.activeGameObject.name + " placed on the surface successfully!", Selection.activeGameObject);
 		}
 		/// <summary>
+		/// Validation method for the Center Parent to Child Mesh Bounds menu item.
+		/// Ensures that exactly one GameObject with at least one child mesh renderer is selected.
+		/// </summary>
+		/// <returns>True if exactly one valid parent GameObject is selected, false otherwise.</returns>
+		[MenuItem("Tools/Utilities/Center selected parent to child mesh bounds", true)]
+		public static bool CenterParentToChildMeshBoundsCheck()
+		{
+			if (!Selection.activeGameObject || Selection.gameObjects.Length != 1)
+				return false;
+
+			return TryGetChildMeshBounds(Selection.activeGameObject.transform, out _);
+		}
+		/// <summary>
+		/// Moves the selected parent GameObject to the center of its child mesh bounds while offsetting
+		/// direct children to preserve their world positions.
+		/// </summary>
+		[MenuItem("Tools/Utilities/Center selected parent to child mesh bounds", false, 101)]
+		public static void CenterParentToChildMeshBounds()
+		{
+			if (!CenterParentToChildMeshBoundsCheck())
+				return;
+
+			Transform parent = Selection.activeGameObject.transform;
+
+			if (!TryGetChildMeshBounds(parent, out Bounds bounds))
+				return;
+
+			int childCount = parent.childCount;
+			Transform[] children = new Transform[childCount];
+			Vector3[] childPositions = new Vector3[childCount];
+			UnityEngine.Object[] undoObjects = new UnityEngine.Object[childCount + 1];
+
+			undoObjects[0] = parent;
+
+			for (int i = 0; i < childCount; i++)
+			{
+				children[i] = parent.GetChild(i);
+				childPositions[i] = children[i].position;
+				undoObjects[i + 1] = children[i];
+			}
+
+			Undo.RecordObjects(undoObjects, "Center Parent To Child Mesh Bounds");
+
+			parent.position = bounds.center;
+
+			for (int i = 0; i < childCount; i++)
+				children[i].position = childPositions[i];
+
+			PrefabUtility.RecordPrefabInstancePropertyModifications(parent);
+
+			for (int i = 0; i < childCount; i++)
+				PrefabUtility.RecordPrefabInstancePropertyModifications(children[i]);
+
+			Debug.Log($"{Selection.activeGameObject.name} parent centered on child mesh bounds. Child transforms were offset to preserve mesh positions.", Selection.activeGameObject);
+		}
+		/// <summary>
+		/// Calculates the combined world bounds of mesh renderers under child transforms.
+		/// </summary>
+		/// <param name="parent">The parent transform whose child mesh bounds should be calculated.</param>
+		/// <param name="bounds">The combined bounds of child mesh renderers.</param>
+		/// <returns>True if any child mesh renderer is found, false otherwise.</returns>
+		private static bool TryGetChildMeshBounds(Transform parent, out Bounds bounds)
+		{
+			Renderer[] renderers = parent.GetComponentsInChildren<Renderer>(true);
+
+			bounds = default;
+
+			bool hasBounds = false;
+
+			for (int i = 0; i < renderers.Length; i++)
+			{
+				if (renderers[i].transform == parent || !IsMeshRenderer(renderers[i]))
+					continue;
+
+				if (!hasBounds)
+				{
+					bounds = renderers[i].bounds;
+					hasBounds = true;
+				}
+				else
+					bounds.Encapsulate(renderers[i].bounds);
+			}
+
+			return hasBounds;
+		}
+		/// <summary>
+		/// Checks whether the renderer is backed by a mesh.
+		/// </summary>
+		/// <param name="renderer">The renderer to inspect.</param>
+		/// <returns>True when the renderer uses a MeshRenderer or SkinnedMeshRenderer with a mesh.</returns>
+		private static bool IsMeshRenderer(Renderer renderer)
+		{
+			if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+				return skinnedMeshRenderer.sharedMesh;
+
+			if (renderer is MeshRenderer)
+			{
+				MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+
+				return meshFilter && meshFilter.sharedMesh;
+			}
+
+			return false;
+		}
+		/// <summary>
 		/// Validation method for the Export textures from Texture Array menu item.
 		/// Ensures that exactly one Texture2DArray asset is selected before enabling the menu item.
 		/// </summary>
