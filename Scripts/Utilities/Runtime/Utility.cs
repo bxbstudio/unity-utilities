@@ -4265,13 +4265,13 @@ namespace Utilities
 				hierarchyCount = transform.hierarchyCount;
 				localEulerAngles = transform.localEulerAngles.ToFloat3();
 				localPosition = transform.localPosition.ToFloat3();
-				localRotation = transform.localRotation.ToMathematicsQuaternion();
+				localRotation = transform.localRotation.ToQuaternion();
 				localScale = transform.localScale.ToFloat3();
 				localToWorldMatrix = transform.localToWorldMatrix.ToFloat4x4();
 				lossyScale = transform.lossyScale.ToFloat3();
 				position = transform.position.ToFloat3();
 				right = transform.right.ToFloat3();
-				rotation = transform.rotation.ToMathematicsQuaternion();
+				rotation = transform.rotation.ToQuaternion();
 				up = transform.up.ToFloat3();
 				worldToLocalMatrix = transform.worldToLocalMatrix.ToFloat4x4();
 				isCreated = true;
