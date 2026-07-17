@@ -98,6 +98,16 @@ namespace Utilities
 		}
 
 		/// <summary>
+		/// Converts a Unity Vector4 to a Unity.Mathematics float3 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="vector">The Unity Vector4 to convert.</param>
+		/// <returns>A Unity.Mathematics float4 with the same x, y, z, and w values as the input Vector4.</returns>
+		public static float4 ToFloat4(this Vector4 vector)
+		{
+			return new float4(vector.x, vector.y, vector.z, vector.w);
+		}
+
+		/// <summary>
 		/// Converts a Unity Vector3 to a Unity.Mathematics float3 without relying on package-specific implicit operators.
 		/// </summary>
 		/// <param name="vector">The Unity Vector3 to convert.</param>
@@ -108,6 +118,26 @@ namespace Utilities
 		}
 
 		/// <summary>
+		/// Converts a Unity Vector2 to a Unity.Mathematics float2 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="vector">The Unity Vector2 to convert.</param>
+		/// <returns>A Unity.Mathematics float2 with the same x and y values as the input Vector2.</returns>
+		public static float2 ToFloat2(this Vector2 vector)
+		{
+			return new float2(vector.x, vector.y);
+		}
+
+		/// <summary>
+		/// Converts a Unity.Mathematics float4 to a Unity Vector4 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="vector">The Unity.Mathematics float4 to convert.</param>
+		/// <returns>A Unity Vector4 with the same x, y, z, and w values as the input float4.</returns>
+		public static Vector4 ToVector4(this float4 vector)
+		{
+			return new Vector3(vector.x, vector.y, vector.z);
+		}
+
+		/// <summary>
 		/// Converts a Unity.Mathematics float3 to a Unity Vector3 without relying on package-specific implicit operators.
 		/// </summary>
 		/// <param name="vector">The Unity.Mathematics float3 to convert.</param>
@@ -115,6 +145,61 @@ namespace Utilities
 		public static Vector3 ToVector3(this float3 vector)
 		{
 			return new Vector3(vector.x, vector.y, vector.z);
+		}
+		/// <summary>
+		/// Converts a Unity.Mathematics float2 to a Unity Vector2 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="vector">The Unity.Mathematics float2 to convert.</param>
+		/// <returns>A Unity Vector2 with the same x and y values as the input float2.</returns>
+		public static Vector2 ToVector2(this float2 vector)
+		{
+			return new Vector2(vector.x, vector.y);
+		}
+		/// <summary>
+		/// Converts a Unity Quaternion to a Unity.Mathematics quaternion without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="rotation">The Unity Quaternion to convert.</param>
+		/// <returns>A Unity.Mathematics quaternion with the same x, y, z, and w values as the input Quaternion.</returns>
+		public static quaternion ToQuaternion(this Quaternion rotation)
+		{
+			return new quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+		}
+		/// <summary>
+		/// Converts a Unity.Mathematics quaternion to a Unity Quaternion without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="rotation">The Unity.Mathematics quaternion to convert.</param>
+		/// <returns>A Unity Quaternion with the same x, y, z, and w values as the input quaternion.</returns>
+		public static Quaternion ToQuaternion(this quaternion rotation)
+		{
+			return new Quaternion(rotation.value.x, rotation.value.y, rotation.value.z, rotation.value.w);
+		}
+		/// <summary>
+		/// Converts a Unity Matrix4x4 to a Unity.Mathematics float4x4 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="matrix">The Unity Matrix4x4 to convert.</param>
+		/// <returns>A Unity.Mathematics float4x4 with the same column values as the input Matrix4x4.</returns>
+		public static float4x4 ToFloat4x4(this Matrix4x4 matrix)
+		{
+			return new float4x4(
+				new float4(matrix.m00, matrix.m10, matrix.m20, matrix.m30),
+				new float4(matrix.m01, matrix.m11, matrix.m21, matrix.m31),
+				new float4(matrix.m02, matrix.m12, matrix.m22, matrix.m32),
+				new float4(matrix.m03, matrix.m13, matrix.m23, matrix.m33)
+			);
+		}
+		/// <summary>
+		/// Converts a Unity.Mathematics float4x4 to a Unity Matrix4x4 without relying on package-specific implicit operators.
+		/// </summary>
+		/// <param name="matrix">The Unity.Mathematics float4x4 to convert.</param>
+		/// <returns>A Unity Matrix4x4 with the same column values as the input float4x4.</returns>
+		public static Matrix4x4 ToMatrix4x4(this float4x4 matrix)
+		{
+			return new Matrix4x4(
+				new Vector4(matrix.c0.x, matrix.c0.y, matrix.c0.z, matrix.c0.w),
+				new Vector4(matrix.c1.x, matrix.c1.y, matrix.c1.z, matrix.c1.w),
+				new Vector4(matrix.c2.x, matrix.c2.y, matrix.c2.z, matrix.c2.w),
+				new Vector4(matrix.c3.x, matrix.c3.y, matrix.c3.z, matrix.c3.w)
+			);
 		}
 		/// <summary>
 		/// Clamps all keyframes in the animation curve to the range [0,1] for both time and value.
@@ -4173,22 +4258,22 @@ namespace Utilities
 					return;
 
 				childCount = transform.childCount;
-				eulerAngles = transform.eulerAngles;
-				forward = transform.forward;
+				eulerAngles = transform.eulerAngles.ToFloat3();
+				forward = transform.forward.ToFloat3();
 				hasChanged = transform.hasChanged;
 				hierarchyCapacity = transform.hierarchyCapacity;
 				hierarchyCount = transform.hierarchyCount;
-				localEulerAngles = transform.localEulerAngles;
-				localPosition = transform.localPosition;
-				localRotation = transform.localRotation;
-				localScale = transform.localScale;
-				localToWorldMatrix = transform.localToWorldMatrix;
-				lossyScale = transform.lossyScale;
-				position = transform.position;
-				right = transform.right;
-				rotation = transform.rotation;
-				up = transform.up;
-				worldToLocalMatrix = transform.worldToLocalMatrix;
+				localEulerAngles = transform.localEulerAngles.ToFloat3();
+				localPosition = transform.localPosition.ToFloat3();
+				localRotation = transform.localRotation.ToMathematicsQuaternion();
+				localScale = transform.localScale.ToFloat3();
+				localToWorldMatrix = transform.localToWorldMatrix.ToFloat4x4();
+				lossyScale = transform.lossyScale.ToFloat3();
+				position = transform.position.ToFloat3();
+				right = transform.right.ToFloat3();
+				rotation = transform.rotation.ToMathematicsQuaternion();
+				up = transform.up.ToFloat3();
+				worldToLocalMatrix = transform.worldToLocalMatrix.ToFloat4x4();
 				isCreated = true;
 			}
 
@@ -6642,7 +6727,7 @@ namespace Utilities
 		/// <returns>The Vector3 value resulting from the interpolation or extrapolation.</returns>
 		public static Vector3 LerpUnclamped(Vector3 a, Vector3 b, float t)
 		{
-			return new float3(LerpUnclamped(a.x, b.x, t), LerpUnclamped(a.y, b.y, t), LerpUnclamped(a.z, b.z, t));
+			return new Vector3(LerpUnclamped(a.x, b.x, t), LerpUnclamped(a.y, b.y, t), LerpUnclamped(a.z, b.z, t));
 		}
 
 		/// <summary>
@@ -6670,7 +6755,7 @@ namespace Utilities
 		/// <returns>The Vector2 value resulting from the interpolation or extrapolation.</returns>
 		public static Vector2 LerpUnclamped(Vector2 a, Vector2 b, float t)
 		{
-			return new float2(LerpUnclamped(a.x, b.x, t), LerpUnclamped(a.y, b.y, t));
+			return new Vector2(LerpUnclamped(a.x, b.x, t), LerpUnclamped(a.y, b.y, t));
 		}
 
 		/// <summary>
