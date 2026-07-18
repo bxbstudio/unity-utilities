@@ -42,7 +42,7 @@ namespace Utilities.Core.Managed.Editor
 					GameLogger.LogWarning($"The object {newResource.name} should be in the Resources folder!", "Resources Reference Property", property.serializedObject.targetObject);
 				else
 				{
-					string newPath = string.Join(Path.DirectorySeparatorChar, pathParts.Skip(index + 1));
+					string newPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathParts.Skip(index + 1));
 
 					pathProperty.stringValue = Path.Combine(Path.GetDirectoryName(newPath), Path.GetFileNameWithoutExtension(newPath));
 				}

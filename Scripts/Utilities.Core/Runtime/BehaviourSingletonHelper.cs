@@ -48,7 +48,7 @@ namespace Utilities.Core
 							goto CONTINUE_SEARCH;
 
 						// If not found in scene, create a new GameObject and add the component
-						GameObject gameObject = new($"[Singleton] {type.Name}");
+						GameObject gameObject = new GameObject($"[Singleton] {type.Name}");
 
 						instance = gameObject.AddComponent(type) as MonoBehaviour;
 

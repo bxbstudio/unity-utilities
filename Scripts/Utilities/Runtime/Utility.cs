@@ -6298,7 +6298,7 @@ namespace Utilities
 		{
 			// Rotate the query point into the box's local axis frame, where the box is axis-aligned.
 			Vector3 local = Quaternion.Inverse(orientation) * (point - center);
-			Vector3 clamped = new(
+			Vector3 clamped = new Vector3(
 				Mathf.Clamp(local.x, -halfExtents.x, halfExtents.x),
 				Mathf.Clamp(local.y, -halfExtents.y, halfExtents.y),
 				Mathf.Clamp(local.z, -halfExtents.z, halfExtents.z));

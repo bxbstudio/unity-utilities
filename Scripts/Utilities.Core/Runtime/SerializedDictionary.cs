@@ -14,10 +14,10 @@ namespace Utilities.Core
         #region Variables
 
         [SerializeField, HideInInspector]
-        private List<TKey> keys = new();
+        private List<TKey> keys = new List<TKey>();
 
         [SerializeField, HideInInspector]
-        private List<TValue> values = new();
+        private List<TValue> values = new List<TValue>();
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace Utilities.Core
         /// <returns>A Dictionary containing the same key-value pairs.</returns>
         public Dictionary<TKey, TValue> ToDictionary()
         {
-            Dictionary<TKey, TValue> dictionary = new();
+            Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
 
             for (int i = 0; i < keys.Count; i++)
                 dictionary.Add(keys[i], values[i]);
@@ -44,8 +44,8 @@ namespace Utilities.Core
         /// <returns>A new SerializedDictionary containing the same key-value pairs.</returns>
         public void FromDictionary(Dictionary<TKey, TValue> dictionary)
         {
-            keys = new(dictionary.Keys);
-            values = new(dictionary.Values);
+            keys = new List<TKey>(dictionary.Keys);
+            values = new List<TValue>(dictionary.Values);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Utilities.Core
             if (dictionary == null)
                 return null;
 
-            return new(dictionary);
+            return new SerializedDictionary<TKey, TValue>(dictionary);
         }
 
         #endregion
@@ -67,8 +67,8 @@ namespace Utilities.Core
 
         private SerializedDictionary(Dictionary<TKey, TValue> dictionary)
         {
-            keys = new(dictionary.Keys);
-            values = new(dictionary.Values);
+            keys = new List<TKey>(dictionary.Keys);
+            values = new List<TValue>(dictionary.Values);
         }
 
         #endregion

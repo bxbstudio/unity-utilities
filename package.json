@@ -6,7 +6,8 @@
   "unity": "2020.3",
   "unityRelease": "17f1",
   "dependencies": {
-    "com.unity.mathematics": "1.2.6"
+    "com.unity.entities": "0.51.1-preview.21",
+    "com.unity.visualscripting": "1.5.2"
   },
   "documentationUrl": "https://github.com/BxB-Studio/Unity-CSharp-Utilities/blob/master/Documentation/GettingStarted.md",
   "changelogUrl": "https://github.com/BxB-Studio/Unity-CSharp-Utilities/blob/master/CHANGELOG.md",

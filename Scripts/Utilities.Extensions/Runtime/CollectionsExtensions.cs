@@ -14,7 +14,7 @@ namespace Utilities
 		[BurstCompile]
 		public static NativeList<T> AsNativeList<T>(this DynamicBuffer<T> buffer, Allocator allocator) where T : unmanaged, IBufferElementData
 		{
-			NativeList<T> list = new(buffer.Length, allocator);
+			NativeList<T> list = new NativeList<T>(buffer.Length, allocator);
 
 			for (int i = 0; i < buffer.Length; i++)
 				list.Add(buffer[i]);

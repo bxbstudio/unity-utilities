@@ -14,7 +14,7 @@ namespace Utilities
 			Renderer[] source = gameObject.GetComponentsInChildren<Renderer>();
 
 			if (source.Length > 0)
-				source = source.Where(renderer => renderer is not TrailRenderer && renderer is not ParticleSystemRenderer).ToArray();
+				source = source.Where(renderer => !(renderer is TrailRenderer) && !(renderer is ParticleSystemRenderer)).ToArray();
 
 			Bounds result = default;
 			Quaternion rotation = gameObject.transform.rotation;
