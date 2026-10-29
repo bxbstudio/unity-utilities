@@ -19,12 +19,7 @@ namespace Utilities.Core
 		/// <summary>
 		/// Gets or sets whether verbose mode is enabled.
 		/// </summary>
-		private static readonly bool VerboseModeEnabled
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-			= true;
-#else
-			= false;
-#endif
+		private static readonly bool VerboseModeEnabled = Debug.isDebugBuild;
 
 		#endregion
 

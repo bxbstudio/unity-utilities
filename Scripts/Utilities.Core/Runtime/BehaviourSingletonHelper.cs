@@ -24,7 +24,11 @@ namespace Utilities.Core
 		{
 			var behaviourSingletonType = typeof(BehaviourSingleton<>);
 
+#if UNITY_6000_4_OR_NEWER
+			foreach (var assembly in UnityEngine.Assemblies.CurrentAssemblies.GetLoadedAssemblies())
+#else
 			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+#endif
 				foreach (var type in assembly.GetTypes())
 				{
 					if (type.IsAbstract || !type.IsClass || type.IsGenericType)

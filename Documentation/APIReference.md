@@ -118,7 +118,7 @@ Useful `Bezier.Path` members include:
 
 ### `DataSerializationUtility<T>`
 
-Binary file and `Resources` serialization helper for reference types.
+JSON file and `Resources` serialization helper for reference types, using `JsonUtility`. Legacy BinaryFormatter files are migrated to JSON in the Unity Editor.
 
 | API | Notes |
 | --- | --- |

@@ -17,7 +17,7 @@ This guide covers the supported ways to add `dev.bxbstudio.utilities` to a Unity
 4. Enter:
 
 ```text
-https://github.com/BxB-Studio/Unity-CSharp-Utilities.git
+https://github.com/bxbstudio/unity-utilities.git
 ```
 
 5. Click `Add`.
@@ -29,7 +29,7 @@ You can also add the dependency directly to `Packages/manifest.json`:
 ```json
 {
   "dependencies": {
-    "dev.bxbstudio.utilities": "https://github.com/BxB-Studio/Unity-CSharp-Utilities.git"
+    "dev.bxbstudio.utilities": "https://github.com/bxbstudio/unity-utilities.git"
   }
 }
 ```
@@ -40,7 +40,7 @@ If your project does not already include `com.unity.mathematics`, add it as well
 {
   "dependencies": {
     "com.unity.mathematics": "1.2.6",
-    "dev.bxbstudio.utilities": "https://github.com/BxB-Studio/Unity-CSharp-Utilities.git"
+    "dev.bxbstudio.utilities": "https://github.com/bxbstudio/unity-utilities.git"
   }
 }
 ```

@@ -24,7 +24,11 @@ namespace Utilities.Core
 			get
 			{
 				if (!instance || !instance.isActiveAndEnabled)
+#if UNITY_2022_2_OR_NEWER
 					instance = FindAnyObjectByType<T>();
+#else
+					instance = FindObjectOfType<T>();
+#endif
 
 				return instance;
 			}

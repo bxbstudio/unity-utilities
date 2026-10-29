@@ -11,7 +11,7 @@ This guide covers the current public surface of `dev.bxbstudio.utilities` and sh
 3. Enter:
 
 ```text
-https://github.com/BxB-Studio/Unity-CSharp-Utilities.git
+https://github.com/bxbstudio/unity-utilities.git
 ```
 
 ### Requirements
@@ -134,9 +134,13 @@ public class BezierExample : MonoBehaviour
 }
 ```
 
-## Binary Serialization
+## Data Serialization
 
-`DataSerializationUtility<T>` saves and loads reference-type data using binary serialization from a regular file path or from `Resources`.
+`DataSerializationUtility<T>` saves and loads reference-type data as UTF-8 JSON, using `JsonUtility`, from a regular file path or from `Resources`.
+
+- Only public or `[SerializeField]` fields of `[Serializable]` types are stored. Root arrays, dictionaries and polymorphic references aren't supported.
+- Constructors don't run when data is loaded.
+- Files saved in the BinaryFormatter format used before version 1.1.14 are migrated to JSON automatically in the Unity Editor, or manually from `Tools/Utilities/Migrate Legacy Data Files`. The original files are backed up to `Library/BxBStudio/LegacyData`. Player builds can only read JSON files.
 
 ```csharp
 using System;

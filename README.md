@@ -11,7 +11,7 @@
 - Runtime extension methods for `Transform`, `AnimationCurve`, `string`, `Enum`, and `Color`
 - Large `Utility` surface for units, intervals, math helpers, bounds helpers, render-pipeline checks, screenshots, and asset helpers
 - `Bezier.Path` utilities for building and sampling spline paths
-- File and `Resources`-based binary serialization through `DataSerializationUtility<T>`
+- File and `Resources`-based JSON serialization through `DataSerializationUtility<T>`, with automatic Editor migration of legacy BinaryFormatter files
 - Core helpers such as `BehaviourSingleton<T>`, `ScriptableSingleton<T>`, `GameLogger`, and `SerializedDictionary<TKey, TValue>`
 - Managed references for scene assets and `Resources` assets with editor drawers
 - Editor utilities for scripting define symbols, debug menu items, layers management, and small workflow windows
@@ -31,7 +31,7 @@
 3. Enter:
 
 ```text
-https://github.com/BxB-Studio/Unity-CSharp-Utilities.git
+https://github.com/bxbstudio/unity-utilities.git
 ```
 
 For more setup options, see the [Installation Guide](Documentation/Installation.md).
@@ -91,7 +91,9 @@ public class IntervalExample : MonoBehaviour
 }
 ```
 
-### Binary serialization
+### Data serialization
+
+Data is stored as UTF-8 JSON using `JsonUtility`, so only public or `[SerializeField]` fields of `[Serializable]` types are saved.
 
 ```csharp
 using System;
